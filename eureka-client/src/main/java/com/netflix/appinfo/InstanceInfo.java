@@ -51,9 +51,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Karthik Ranganathan, Greg Kim
  */
+// TODO: @ProvidedBy是Guice的注解，用于在Guice的DI依赖注入的时生成一个InstanceInfo
 @ProvidedBy(EurekaConfigBasedInstanceInfoProvider.class)
+// TODO: 序列化，反序列化使用定制的序列化器
 @Serializer("com.netflix.discovery.converters.EntityBodyConverter")
+// TODO: 支持XML的序列化/反序列化，它俩都用instance前缀包裹着
 @XStreamAlias("instance")
+// TODO: 支持json的序列化/反序列化
 @JsonRootName("instance")
 public class InstanceInfo {
 
@@ -89,33 +93,67 @@ public class InstanceInfo {
     public static final int DEFAULT_COUNTRY_ID = 1; // US
 
     // The (fixed) instanceId for this instanceInfo. This should be unique within the scope of the appName.
+    /**
+     * TODO: 实例ID，在同一个应用appName的范围内是必须唯一的
+     */
     private volatile String instanceId;
 
+    /**
+     * 应用名，同一个应用可以有N多个实例
+     */
     private volatile String appName;
+    /**
+     * 应用组名，多个应用可分组，很少用，一般为Null
+     */
     @Auto
     private volatile String appGroupName;
-
+    /**
+     * 本实例的IP地址，如ipAddr = 192.168.1.1
+     */
     private volatile String ipAddr;
 
     private static final String SID_DEFAULT = "na";
     @Deprecated
     private volatile String sid = SID_DEFAULT;
 
+    /**
+     * 默认的端口号，默认7001
+     */
     private volatile int port = DEFAULT_PORT;
+    /**
+     * 安全端口号，默认值7002
+     */
     private volatile int securePort = DEFAULT_SECURE_PORT;
-
+    /**
+     * 主页
+     */
     @Auto
     private volatile String homePageUrl;
+    /**
+     * 状态页
+     */
     @Auto
     private volatile String statusPageUrl;
+    /**
+     * 健康检查的URL
+     */
     @Auto
     private volatile String healthCheckUrl;
+    /**
+     * 一般不用，为null即可
+     */
     @Auto
     private volatile String secureHealthCheckUrl;
+    /**
+     * 逻辑地址
+     */
     @Auto
     private volatile String vipAddress;
     @Auto
     private volatile String secureVipAddress;
+    /**
+     * 相对url
+     */
     @XStreamOmitField
     private String statusPageRelativeUrl;
     @XStreamOmitField
@@ -134,8 +172,17 @@ public class InstanceInfo {
     private volatile int countryId = DEFAULT_COUNTRY_ID; // Defaults to US
     private volatile boolean isSecurePortEnabled = false;
     private volatile boolean isUnsecurePortEnabled = true;
+    /**
+     * 数据中心
+     */
     private volatile DataCenterInfo dataCenterInfo;
+    /**
+     * hostName, 主机名
+     */
     private volatile String hostName;
+    /**
+     * 实例状态 UP
+     */
     private volatile InstanceStatus status = InstanceStatus.UP;
     private volatile InstanceStatus overriddenStatus = InstanceStatus.UNKNOWN;
     @XStreamOmitField
@@ -313,13 +360,30 @@ public class InstanceInfo {
         this.version = ii.version;
     }
 
-
+    /**
+     * TODO: 实例状态枚举
+     */
     public enum InstanceStatus {
+        /**
+         * UP 正常服务状态
+         */
         UP, // Ready to receive traffic
+        /**
+         * 当健康检查失败时，实例的状态转变到down
+         */
         DOWN, // Do not send traffic- healthcheck callback failed
+        /**
+         * 实例初始化状态，此状态主要给实例预留初始化时间
+         */
         STARTING, // Just about starting- initializations to be done - do not
         // send traffic
+        /**
+         * 不参与接受服务，但是服务正常
+         */
         OUT_OF_SERVICE, // Intentionally shutdown for traffic
+        /**
+         * 未知状态
+         */
         UNKNOWN;
 
         public static InstanceStatus toEnum(String s) {
@@ -384,6 +448,9 @@ public class InstanceInfo {
         @XStreamOmitField
         private final VipAddressResolver vipAddressResolver;
 
+        /**
+         * 命名空间，一个InstanceInfo一个命名空间
+         */
         private String namespace;
 
         private Builder(InstanceInfo result, VipAddressResolver vipAddressResolver, Function<String,String> intern) {
@@ -940,9 +1007,11 @@ public class InstanceInfo {
      */
     @JsonIgnore
     public String getId() {
+        // TODO: 若自己配置了instanceId就直接返回
         if (instanceId != null && !instanceId.isEmpty()) {
             return instanceId;
         } else if (dataCenterInfo instanceof UniqueIdentifier) {
+            // TODO: 否则取值数据中心
             String uniqueId = ((UniqueIdentifier) dataCenterInfo).getId();
             if (uniqueId != null && !uniqueId.isEmpty()) {
                 return uniqueId;
@@ -1161,6 +1230,8 @@ public class InstanceInfo {
 
     /**
      * Set the status for this instance.
+     * TODO: 只要状态status发生了变更，那么一定会setIsDirty();
+     * 标记此实例已经dirty了，需要中心注册
      *
      * @param status status for this instance.
      * @return the prev status if a different status from the current was set, null otherwise
@@ -1360,6 +1431,7 @@ public class InstanceInfo {
     }
 
     /**
+     * TODO: 获取到当前实例的所在的zone区，availZone：可用区
      * Get the zone that a particular instance is in.
      * Note that for AWS deployments, myInfo should contain AWS dataCenterInfo which should contain
      * the AWS zone of the instance, and availZones is ignored.

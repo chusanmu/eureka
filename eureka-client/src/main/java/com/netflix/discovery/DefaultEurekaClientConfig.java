@@ -66,8 +66,14 @@ public class DefaultEurekaClientConfig implements EurekaClientConfig {
     @Deprecated
     public static final String DEFAULT_NAMESPACE = CommonConstants.DEFAULT_CONFIG_NAMESPACE + ".";
     public static final String DEFAULT_ZONE = "defaultZone";
+    /**
+     * 多个zone之间以逗号分隔
+     */
     public static final String URL_SEPARATOR = "\\s*,\\s*";
 
+    /**
+     * 默认值是eureka
+     */
     private final String namespace;
     private final DynamicPropertyFactory configInstance;
     private final EurekaTransportConfig transportConfig;
@@ -350,7 +356,7 @@ public class DefaultEurekaClientConfig implements EurekaClientConfig {
 
     /*
      * (non-Javadoc)
-     *
+     * 指定当前实例所在区域
      * @see com.netflix.discovery.EurekaClientConfig#getRegion()
      */
     @Override

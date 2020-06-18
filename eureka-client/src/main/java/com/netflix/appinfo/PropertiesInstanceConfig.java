@@ -29,6 +29,7 @@ import static com.netflix.appinfo.PropertyBasedInstanceConfigConstants.*;
 
 /**
  * A properties based {@link InstanceInfo} configuration.
+ * TODO: 基于配置文件的Eureka应用实例配置抽象类，也是其他具体实现的基类
  *
  * <p>
  * The information required for registration with eureka server is provided in a
@@ -50,8 +51,17 @@ import static com.netflix.appinfo.PropertyBasedInstanceConfigConstants.*;
  */
 public abstract class PropertiesInstanceConfig extends AbstractInstanceConfig implements EurekaInstanceConfig {
 
+    /**
+     * 命名空间，默认值eureka
+     */
     protected final String namespace;
+    /**
+     * 动态属性工厂，TODO: 初始化它调用Archaius1Utils.initConfig(CommonConstants.CONFIG_FILE_NAME)，从而完成了全局属性的加载
+     */
     protected final DynamicPropertyFactory configInstance;
+    /**
+     * 应用分组名称
+     */
     private String appGrpNameFromEnv;
 
     public PropertiesInstanceConfig() {
@@ -244,6 +254,8 @@ public abstract class PropertiesInstanceConfig extends AbstractInstanceConfig im
         return super.getIpAddress();
     }
 
+    /* ---------------- 默认的path是/Status, 默认的homePage是:/, 默认的healthCheck是/healthCheck -------------- */
+    /* ---------------- 生成环境中 三者都需要改 -------------- */
 
     @Override
     public String getStatusPageUrlPath() {

@@ -54,7 +54,10 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 @XStreamAlias("application")
 @JsonRootName("application")
 public class Application {
-    
+
+    /**
+     * 用于随机打乱infoList的顺序
+     */
     private static Random shuffleRandom = new Random();
 
     @Override
@@ -64,16 +67,31 @@ public class Application {
                 + shuffledInstances + ", instancesMap=" + instancesMap + "]";
     }
 
+    /**
+     * 应用的名称
+     */
     private String name;
 
+    /**
+     * 标记该应用是否已经脏了，但凡改变了实例的个数，新增或者减少时就标记其脏了
+     */
     @XStreamOmitField
     private volatile boolean isDirty = false;
 
+    /**
+     * 存储实例们的Set集合，实例ID相同代表同一实例
+     */
     @XStreamImplicit
     private final Set<InstanceInfo> instances;
 
+    /**
+     * 乱序后的实例集合
+     */
     private final AtomicReference<List<InstanceInfo>> shuffledInstances;
 
+    /**
+     * 缓存
+     */
     private final Map<String, InstanceInfo> instancesMap;
 
     public Application() {
@@ -87,6 +105,11 @@ public class Application {
         this.name = StringCache.intern(name);
     }
 
+    /**
+     * 反序列时 通过此构造器生成一个Application应用
+     * @param name
+     * @param instances
+     */
     @JsonCreator
     public Application(
             @JsonProperty("name") String name,
@@ -98,6 +121,7 @@ public class Application {
     }
 
     /**
+     * 添加一个实例
      * Add the given instance info the list.
      *
      * @param i
@@ -113,6 +137,7 @@ public class Application {
     }
 
     /**
+     * 移除一个，并且标记idDirty=true
      * Remove the given instance info the list.
      *
      * @param i
@@ -123,6 +148,7 @@ public class Application {
     }
 
     /**
+     * TODO: 返回所有的实例列表，乱序后的，乱序的为null, 就返回正常的
      * Gets the list of instances associated with this particular application.
      * <p>
      * Note that the instances are always returned with random order after
@@ -154,6 +180,7 @@ public class Application {
 
 
     /**
+     * 根据ID拿到指定的instance实例
      * Get the instance info that matches the given id.
      *
      * @param id
@@ -191,6 +218,7 @@ public class Application {
     }
 
     /**
+     * 将应用程序中的实例列表打乱，并将其存储用来检索
      * Shuffles the list of instances in the application and stores it for
      * future retrievals.
      *

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 /**
+ * TODO: 续租信息，续租是eureka里特别重要的一个概念，eureka会决定根据此租约中的com.netflix.appinfo.EurekaInstanceConfig#getLeaseExpirationDurationInSeconds() 中设置的持续时间将实例从其视图中移除，租约还记录了上次续租的时间
  * Represents the <em>lease</em> information with <em>Eureka</em>.
  *
  * <p>
@@ -37,17 +38,36 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 @JsonRootName("leaseInfo")
 public class LeaseInfo {
 
+    /* ---------------- 默认值们 -------------- */
+
     public static final int DEFAULT_LEASE_RENEWAL_INTERVAL = 30;
     public static final int DEFAULT_LEASE_DURATION = 90;
 
     // Client settings
+    /**
+     * TODO: 续租间隔时间，多长时间续租一次，默认值是30s, 用于client客户端，每隔30s上报续约一次
+     */
     private int renewalIntervalInSecs = DEFAULT_LEASE_RENEWAL_INTERVAL;
+    /**
+     * TODO: 续约持续时间(过期时间), 默认是90s, 90s倒计时，期间没有收到续约就会执行对应动作，用于Server服务端，90s内没有收到心跳，就T除掉对应实例
+     */
     private int durationInSecs = DEFAULT_LEASE_DURATION;
-
+    /**
+     * 租约的注册时间
+     */
     // Server populated
     private long registrationTimestamp;
+    /**
+     * 最近一次的续约时间，服务端记录，用于倒计时额起始值
+     */
     private long lastRenewalTimestamp;
+    /**
+     * 下线时间
+     */
     private long evictionTimestamp;
+    /**
+     * 上线时间
+     */
     private long serviceUpTimestamp;
 
     public static final class Builder {

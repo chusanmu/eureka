@@ -64,6 +64,7 @@ public interface EurekaInstanceConfig {
     String getAppGroupName();
 
     /**
+     * TODO: 初始化后是否开启，若开启了，该实例就可以接受流量了，由于某些实例初始化需要时间，所以通过此属性可以保护实例，默认是false, 初始化阶段不接收流量
      * Indicates whether the instance should be enabled for taking traffic as
      * soon as it is registered with eureka. Sometimes the application might
      * need to do some pre-processing before it is ready to take traffic.
@@ -108,6 +109,7 @@ public interface EurekaInstanceConfig {
     boolean getSecurePortEnabled();
 
     /**
+     * TODO: Client多长时间发送一次心跳，告诉自己还活着，默认30S
      * Indicates how often (in seconds) the eureka client needs to send
      * heartbeats to eureka server to indicate that it is still alive. If the
      * heartbeats are not received for the period specified in
@@ -125,6 +127,7 @@ public interface EurekaInstanceConfig {
     int getLeaseRenewalIntervalInSeconds();
 
     /**
+     * TODO: Server多久没收到心跳来后，就T除掉该实例
      * Indicates the time in seconds that the eureka server waits since it
      * received the last heartbeat before it can remove this instance from its
      * view and there by disallowing traffic to this instance.
@@ -143,6 +146,7 @@ public interface EurekaInstanceConfig {
     int getLeaseExpirationDurationInSeconds();
 
     /**
+     * TODO: 虚拟主机，对应InstanceInfo.vipAddress的值
      * Gets the virtual host name defined for this instance.
      *
      * <p>
@@ -158,6 +162,7 @@ public interface EurekaInstanceConfig {
     String getVirtualHostName();
 
     /**
+     * TODO: 使用的安全端口
      * Gets the secure virtual host name defined for this instance.
      *
      * <p>
@@ -183,6 +188,7 @@ public interface EurekaInstanceConfig {
     String getASGName();
 
     /**
+     * TODO: 主机名，默认就是本地的InetAddress.getLocalHost().getHostName()
      * Gets the hostname associated with this instance. This is the exact name
      * that would be used by other instances to make calls.
      *
@@ -195,6 +201,7 @@ public interface EurekaInstanceConfig {
     String getHostName(boolean refresh);
 
     /**
+     * 元数据
      * Gets the metadata name/value pairs associated with this instance. This
      * information is sent to eureka server and can be used by other instances.
      *
@@ -213,6 +220,7 @@ public interface EurekaInstanceConfig {
     DataCenterInfo getDataCenterInfo();
 
     /**
+     * TODO: IP地址
      * Get the IPAdress of the instance. This information is for academic
      * purposes only as the communication from other instances primarily happen
      * using the information supplied in {@link #getHostName(boolean)}.
@@ -353,6 +361,7 @@ public interface EurekaInstanceConfig {
     String getSecureHealthCheckUrl();
 
     /**
+     * TODO: 获取实例的网络地址，云服务器上会有值
      * An instance's network addresses should be fully expressed in it's {@link DataCenterInfo}.
      * For example for instances in AWS, this will include the publicHostname, publicIp,
      * privateHostname and privateIp, when available. The {@link com.netflix.appinfo.InstanceInfo}
@@ -368,6 +377,7 @@ public interface EurekaInstanceConfig {
     String[] getDefaultAddressResolutionOrder();
 
     /**
+     * 命名空间 默认值是eureka
      * Get the namespace used to find properties.
      * @return the namespace used to find properties.
      */

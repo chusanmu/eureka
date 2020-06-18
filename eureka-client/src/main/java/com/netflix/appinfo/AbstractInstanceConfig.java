@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * TODO: 实现了大部分方法，给与默认的实现，这样用户只需要覆盖几个方法就可以注册它们的实例与Server实例配置
  * An abstract instance info configuration with some defaults to get the users
  * started quickly.The users have to override only a few methods to register
  * their instance with eureka server.
@@ -41,15 +42,29 @@ public abstract class AbstractInstanceConfig implements EurekaInstanceConfig {
      */
     @Deprecated
     public static final String DEFAULT_NAMESPACE = CommonConstants.DEFAULT_CONFIG_NAMESPACE;
-    
+
+    /* ---------------- 一些默认值 -------------- */
+
     private static final int LEASE_EXPIRATION_DURATION_SECONDS = 90;
     private static final int LEASE_RENEWAL_INTERVAL_SECONDS = 30;
+    /**
+     * 关闭https端口，开启http端口
+     */
     private static final boolean SECURE_PORT_ENABLED = false;
     private static final boolean NON_SECURE_PORT_ENABLED = true;
+    /**
+     * 默认值 80，安全端口443
+     */
     private static final int NON_SECURE_PORT = 80;
     private static final int SECURE_PORT = 443;
     private static final boolean INSTANCE_ENABLED_ON_INIT = false;
+    /**
+     * ip + hostName
+     */
     private static final Pair<String, String> hostInfo = getHostInfo();
+    /**
+     * 默认的数据中心
+     */
     private DataCenterInfo info = new DataCenterInfo() {
         @Override
         public Name getName() {
@@ -181,7 +196,7 @@ public abstract class AbstractInstanceConfig implements EurekaInstanceConfig {
 
     /*
      * (non-Javadoc)
-     *
+     * TODO: 空实现，元数据不是必须的，子类有需要就自己实现
      * @see com.netflix.appinfo.InstanceConfig#getMetadataMap()
      */
     @Override
@@ -213,6 +228,11 @@ public abstract class AbstractInstanceConfig implements EurekaInstanceConfig {
 
     public boolean shouldBroadcastPublicIpv4Addr () { return false; }
 
+
+    /**
+     * TODO: 获取本地的IP地址和主机名
+     * @return
+     */
     private static Pair<String, String> getHostInfo() {
         Pair<String, String> pair;
         try {

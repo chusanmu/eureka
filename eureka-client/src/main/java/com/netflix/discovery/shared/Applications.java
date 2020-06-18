@@ -47,6 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
+ * TODO: 用于封装由eureka server返回的所有注册表信息的类
  * The class that wraps all the registry information returned by eureka server.
  *
  * <p>
@@ -82,9 +83,18 @@ public class Applications {
 
     private String appsHashCode;
     private Long versionDelta;
+    /**
+     * 包含所有application应用们，使用AbstractQueue装载，实际是个ConcurrentLinkedQueue队列，特点FIFO
+     */
     @XStreamImplicit
     private final AbstractQueue<Application> applications;
+    /**
+     * map缓存，key是应用名，value是实例本身
+     */
     private final Map<String, Application> appNameApplicationMap;
+    /**
+     * TODO: map缓存,key是InstanceInfo.vipAddress, value是VipIndexSupport持有多个InstanceInfo实例
+     */
     private final Map<String, VipIndexSupport> virtualHostNameAppMap;
     private final Map<String, VipIndexSupport> secureVirtualHostNameAppMap;
 
@@ -96,6 +106,7 @@ public class Applications {
     }
 
     /**
+     * registeredApplications 已经注册的应用
      * Note that appsHashCode and versionDelta key names are formatted in a
      * custom/configurable way.
      */
@@ -109,13 +120,14 @@ public class Applications {
         this.secureVirtualHostNameAppMap = new ConcurrentHashMap<String, VipIndexSupport>();
         this.appsHashCode = appsHashCode;
         this.versionDelta = versionDelta;
-
+        // TODO: 每个application应用都添加进Map or Queue里面存储着
         for (Application app : registeredApplications) {
             this.addApplication(app);
         }
     }
 
     /**
+     * 添加一个应用
      * Add the <em>application</em> to the list.
      *
      * @param app
@@ -128,6 +140,7 @@ public class Applications {
     }
 
     /**
+     * TODO: 得到已经注册的Applications应用们
      * Gets the list of all registered <em>applications</em> from eureka.
      *
      * @return list containing all applications registered with eureka.
@@ -138,6 +151,7 @@ public class Applications {
     }
 
     /**
+     * 根据应用名称去获取应用
      * Gets the registered <em>application</em> for the given
      * application name.
      *
@@ -182,6 +196,7 @@ public class Applications {
     }
 
     /**
+     * 获取所有应用的instance实例总和
      * @return a weakly consistent size of the number of instances in all the
      *         applications
      */
@@ -272,6 +287,7 @@ public class Applications {
     }
 
     /**
+     * TODO: 打乱instanceInfo实例们，针对每个application都会打乱
      * Shuffles the provided instances so that they will not always be returned
      * in the same order.
      * 
@@ -406,6 +422,7 @@ public class Applications {
     }
 
     /**
+     * 移除一个应用
      * Remove the <em>application</em> from the list.
      *
      * @param app the <em>application</em>

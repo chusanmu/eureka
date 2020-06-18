@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Singleton;
 
 /**
+ * TODO: 默认实现，前提是使用Guice完成依赖管理
  * An {@link InstanceInfo} configuration for AWS cloud deployments.
  *
  * <p>
