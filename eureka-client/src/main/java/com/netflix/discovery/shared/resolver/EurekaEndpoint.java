@@ -16,6 +16,9 @@
 
 package com.netflix.discovery.shared.resolver;
 
+/**
+ * 对于eureka client端来说就代表着一台远程的server服务器，若s端是个集群，那么client端便可获取到一个个eurekaEndpoint的集合
+ */
 public interface EurekaEndpoint extends Comparable<Object> {
 
     String getServiceUrl();

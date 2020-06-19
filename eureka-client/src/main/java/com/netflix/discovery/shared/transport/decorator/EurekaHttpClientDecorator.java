@@ -24,11 +24,18 @@ import com.netflix.discovery.shared.transport.EurekaHttpClient;
 import com.netflix.discovery.shared.transport.EurekaHttpResponse;
 
 /**
+ * 装饰者，抽象类，使用装饰器模式为目标eurekaHttpClient包装上新的功能
  * @author Tomasz Bak
  */
 public abstract class EurekaHttpClientDecorator implements EurekaHttpClient {
 
+    /**
+     * 定义了几种不同的请求类型
+     */
     public enum RequestType {
+        /**
+         * 服务注册
+         */
         Register,
         Cancel,
         SendHeartBeat,

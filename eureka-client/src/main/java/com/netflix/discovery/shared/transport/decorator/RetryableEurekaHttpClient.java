@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import static com.netflix.discovery.EurekaClientNames.METRIC_TRANSPORT_PREFIX;
 
 /**
+ * TODO: 重试，最重要的一个实现
  * {@link RetryableEurekaHttpClient} retries failed requests on subsequent servers in the cluster.
  * It maintains also simple quarantine list, so operations are not retried again on servers
  * that are not reachable at the moment.

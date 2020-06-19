@@ -31,6 +31,7 @@ import org.apache.http.params.HttpParams;
 import static com.netflix.discovery.util.DiscoveryBuildInfo.buildVersion;
 
 /**
+ * 接口的唯一实现，用于把jersey的api都藏起来
  * @author Tomasz Bak
  */
 public class EurekaJerseyClientImpl implements EurekaJerseyClient {
@@ -40,11 +41,24 @@ public class EurekaJerseyClientImpl implements EurekaJerseyClient {
     private static final int HTTPS_PORT = 443;
     private static final String KEYSTORE_TYPE = "JKS";
 
+    /**
+     * 目标client, getClient会返回它
+     */
     private final ApacheHttpClient4 apacheHttpClient;
+    /**
+     * 清理ApacheHttpClient4空闲连接的定时器
+     */
     private final ApacheHttpClientConnectionCleaner apacheHttpClientConnectionCleaner;
 
     ClientConfig jerseyClientConfig;
 
+    /**
+     * 构造时需要指定连接超时，读取超时时间
+     * @param connectionTimeout
+     * @param readTimeout
+     * @param connectionIdleTimeout
+     * @param clientConfig
+     */
     public EurekaJerseyClientImpl(int connectionTimeout, int readTimeout, final int connectionIdleTimeout,
                                   ClientConfig clientConfig) {
         try {
@@ -54,7 +68,7 @@ public class EurekaJerseyClientImpl implements EurekaJerseyClient {
 
             HttpConnectionParams.setConnectionTimeout(params, connectionTimeout);
             HttpConnectionParams.setSoTimeout(params, readTimeout);
-
+            // TODO: 启动定时任务
             this.apacheHttpClientConnectionCleaner = new ApacheHttpClientConnectionCleaner(apacheHttpClient, connectionIdleTimeout);
         } catch (Throwable e) {
             throw new RuntimeException("Cannot create Jersey client", e);

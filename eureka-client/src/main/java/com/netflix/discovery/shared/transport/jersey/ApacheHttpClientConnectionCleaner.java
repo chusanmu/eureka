@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * TODO: 在后台运行的定时进程，清除apache http客户端连接池中的空心连接，这可以防止在半关闭状态下积累未使用的连接
  * A periodic process running in background cleaning Apache http client connection pool out of idle connections.
  * This prevents from accumulating unused connections in half-closed state.
  */
@@ -62,6 +63,7 @@ public class ApacheHttpClientConnectionCleaner {
 
     public ApacheHttpClientConnectionCleaner(ApacheHttpClient4 apacheHttpClient, final long connectionIdleTimeout) {
         this.apacheHttpClient = apacheHttpClient;
+        // TODO: 默认值30s，也就是说30s执行一次清理
         this.eurekaConnCleaner.scheduleWithFixedDelay(
                 new Runnable() {
                     @Override

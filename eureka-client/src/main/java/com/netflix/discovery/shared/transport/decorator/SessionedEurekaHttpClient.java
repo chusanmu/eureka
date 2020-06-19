@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import static com.netflix.discovery.EurekaClientNames.METRIC_TRANSPORT_PREFIX;
 
 /**
+ * 实现重新连接，连接一台新的server
  * {@link SessionedEurekaHttpClient} enforces full reconnect at a regular interval (a session), preventing
  * a client to sticking to a particular Eureka server instance forever. This in turn guarantees even
  * load distribution in case of cluster topology change.

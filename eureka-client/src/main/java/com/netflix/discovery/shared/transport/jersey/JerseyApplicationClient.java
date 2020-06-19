@@ -23,6 +23,8 @@ import com.sun.jersey.api.client.WebResource.Builder;
 import java.util.Map;
 
 /**
+ * 基于jersey1实现的客户端
+ * 仅仅是在父类的基础上扩展了，外部可以自定义请求头的作用
  * A version of Jersey1 {@link EurekaHttpClient} to be used by applications.
  *
  * @author Tomasz Bak

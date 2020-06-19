@@ -28,6 +28,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ *
+ * TODO: 对全局唯一实例InstanceInfo进行管理，管理的实例一般由构造器传入
+ *      通过registerAppMetadata方法为InstanceInfo的元数据添加k-v数据
+ *      提供Public方法setInstanceStatus()为InstanceInfo设置新的InstanceStatus实例状态
+ *      提供注册，取消注册用于监控InstanceInfo实例的监听器StatusChangeListener的方法
+ *
  * The class that initializes information required for registration with
  * <tt>Eureka Server</tt> and to be discovered by other components.
  *
@@ -40,9 +46,7 @@ import org.slf4j.LoggerFactory;
  * {@link AbstractInstanceConfig}.
  * </p>
  *
- *
  * @author Karthik Ranganathan, Greg Kim
- *
  */
 @Singleton
 public class ApplicationInfoManager {
@@ -77,6 +81,7 @@ public class ApplicationInfoManager {
     }
 
     /**
+     * 初始化一个ApplicatonInfoManager对象
      * public for DI use. This class should be in singleton scope so do not create explicitly.
      * Either use DI or create this explicitly using one of the other public constructors.
      */
@@ -92,6 +97,7 @@ public class ApplicationInfoManager {
         }
 
         // Hack to allow for getInstance() to use the DI'd ApplicationInfoManager
+        // TODO: 把通过DI生成的实例重新赋值给它，达到统一的效果
         instance = this;
     }
 
@@ -119,6 +125,11 @@ public class ApplicationInfoManager {
         return instance;
     }
 
+    /**
+     * 如果使用getInstance()得到的实例，需要调用它完成初始化
+     *
+     * @param config
+     */
     public void initComponent(EurekaInstanceConfig config) {
         try {
             this.config = config;
@@ -129,6 +140,7 @@ public class ApplicationInfoManager {
     }
 
     /**
+     * 获取管理的实例
      * Gets the information about this instance that is registered with eureka.
      *
      * @return information about this instance that is registered with eureka.
@@ -145,7 +157,7 @@ public class ApplicationInfoManager {
      * Register user-specific instance meta data. Application can send any other
      * additional meta data that need to be accessed for other reasons.The data
      * will be periodically sent to the eureka server.
-     *
+     * <p>
      * Please Note that metadata added via this method is not guaranteed to be submitted
      * to the eureka servers upon initial registration, and may be submitted as an update
      * at a subsequent time. If you want guaranteed metadata for initial registration,
@@ -158,6 +170,7 @@ public class ApplicationInfoManager {
     }
 
     /**
+     * TODO: 设置此实例的状态，应用程序可以使用它来指示是否准备接受流量
      * Set the status of this instance. Application can use this to indicate
      * whether it is ready to receive traffic. Setting the status here also notifies all registered listeners
      * of a status change event.
@@ -169,7 +182,7 @@ public class ApplicationInfoManager {
         if (next == null) {
             return;
         }
-
+        // TODO: 如果prev不为null, 那就证明状态发生了变更，就要触发变更的监听器
         InstanceStatus prev = instanceInfo.setStatus(next);
         if (prev != null) {
             for (StatusChangeListener listener : listeners.values()) {
@@ -182,6 +195,8 @@ public class ApplicationInfoManager {
         }
     }
 
+    // TODO: 注册状态变更监听器
+    // TODO: DiscoveryClient里会通过此方法注册一个监听器来监控实例状态，若状态变更为了Down,就立马同步给Server
     public void registerStatusChangeListener(StatusChangeListener listener) {
         listeners.put(listener.getId(), listener);
     }
@@ -191,10 +206,11 @@ public class ApplicationInfoManager {
     }
 
     /**
+     * TODO: 重新获取主机名，以检查它是否已更改，也就是维护实例的setHostName, setIpAddr
      * Refetches the hostname to check if it has changed. If it has, the entire
      * <code>DataCenterInfo</code> is refetched and passed on to the eureka
      * server on next heartbeat.
-     *
+     * <p>
      * see {@link InstanceInfo#getHostName()} for explanation on why the hostname is used as the default address
      */
     public void refreshDataCenterInfoIfRequired() {
@@ -225,9 +241,9 @@ public class ApplicationInfoManager {
                 logger.info(String.format("The spot instance termination action changed from: %s => %s",
                         existingSpotInstanceAction,
                         newSpotInstanceAction));
-                updateInstanceInfo(null , null );
+                updateInstanceInfo(null, null);
             }
-        }        
+        }
     }
 
     private void updateInstanceInfo(String newAddress, String newIp) {
@@ -245,6 +261,9 @@ public class ApplicationInfoManager {
         instanceInfo.setIsDirty();
     }
 
+    /**
+     * 续租信息同步一把，若有需要的话
+     */
     public void refreshLeaseInfoIfRequired() {
         LeaseInfo leaseInfo = instanceInfo.getLeaseInfo();
         if (leaseInfo == null) {
@@ -262,12 +281,18 @@ public class ApplicationInfoManager {
         }
     }
 
+    /**
+     * 实例状态监听器，当实例状态发生改变时会触发
+     */
     public static interface StatusChangeListener {
         String getId();
 
         void notify(StatusChangeEvent statusChangeEvent);
     }
 
+    /**
+     * 实例状态的映射
+     */
     public static interface InstanceStatusMapper {
 
         /**

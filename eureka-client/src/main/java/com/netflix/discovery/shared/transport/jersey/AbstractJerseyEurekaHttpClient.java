@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 import static com.netflix.discovery.shared.transport.EurekaHttpResponse.anEurekaHttpResponse;
 
 /**
+ * TODO：它是基于jsersey1.x的抽象实现，和Client强绑定
  * @author Tomasz Bak
  */
 public abstract class AbstractJerseyEurekaHttpClient implements EurekaHttpClient {
@@ -34,6 +35,9 @@ public abstract class AbstractJerseyEurekaHttpClient implements EurekaHttpClient
     private static final Logger logger = LoggerFactory.getLogger(AbstractJerseyEurekaHttpClient.class);
     protected static final String HTML = "html";
 
+    /**
+     * 负责底层发送Http请求
+     */
     protected final Client jerseyClient;
     protected final String serviceUrl;
 
@@ -43,18 +47,34 @@ public abstract class AbstractJerseyEurekaHttpClient implements EurekaHttpClient
         logger.debug("Created client for url: {}", serviceUrl);
     }
 
+    /**
+     * 服务注册
+     * 1. uri是写死的，和eureka server端的资源地址一一对应
+     * 2. 发送数据，接受数据均是application/json的媒体格式
+     * 3. 发送数据的body体，InstanceInfo, info的序列化动作是交给client本身去完成的，因此序列号器反序列化器也是由传入client已经指定好的
+     * 3. 对response返回，不管响应码是多少，都统一适配为EurekaHttpResponse<T><类型
+     * @param info
+     * @return
+     */
     @Override
     public EurekaHttpResponse<Void> register(InstanceInfo info) {
+        // TODO: uri部分是写死的，对应server端的资源地址
         String urlPath = "apps/" + info.getAppName();
         ClientResponse response = null;
         try {
             Builder resourceBuilder = jerseyClient.resource(serviceUrl).path(urlPath).getRequestBuilder();
+            // TODO: 抽象方法，子类可以增加请求头
             addExtraHeaders(resourceBuilder);
             response = resourceBuilder
+                    // TODO: 接受，以及支持gzip的压缩
                     .header("Accept-Encoding", "gzip")
+                    // TODO: 发送的JSON数据，accept:Application/json
                     .type(MediaType.APPLICATION_JSON_TYPE)
+                    // TODO: 接受json数据
                     .accept(MediaType.APPLICATION_JSON)
+                    // TODO: 发送POST请求，请求体INFO
                     .post(ClientResponse.class, info);
+            // TODO: 封装返回值response
             return anEurekaHttpResponse(response.getStatus()).headers(headersOf(response)).build();
         } finally {
             if (logger.isDebugEnabled()) {
@@ -196,6 +216,7 @@ public abstract class AbstractJerseyEurekaHttpClient implements EurekaHttpClient
             response = requestBuilder.accept(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
 
             Applications applications = null;
+            // TODO: 若正常200返回，就拿到请求体
             if (response.getStatus() == Status.OK.getStatusCode() && response.hasEntity()) {
                 applications = response.getEntity(Applications.class);
             }

@@ -55,12 +55,16 @@ import javax.net.ssl.SSLContext;
 import static com.netflix.discovery.util.DiscoveryBuildInfo.buildVersion;
 
 /**
+ * 用于创建JerseyApplicationClient实例
  * @author Tomasz Bak
  */
 public class JerseyEurekaHttpClientFactory implements TransportClientFactory {
 
     public static final String HTTP_X_DISCOVERY_ALLOW_REDIRECT = "X-Discovery-AllowRedirect";
 
+    /**
+     * 为了得到一个ApacheHttpClient4而构建，可以为null
+     */
     private final EurekaJerseyClient jerseyClient;
     private final ApacheHttpClient4 apacheClient;
     private final ApacheHttpClientConnectionCleaner cleaner;
@@ -103,6 +107,11 @@ public class JerseyEurekaHttpClientFactory implements TransportClientFactory {
         }
     }
 
+    /**
+     * 创建一个JerseyApplicationClient实例
+     * @param endpoint
+     * @return
+     */
     @Override
     public EurekaHttpClient newClient(EurekaEndpoint endpoint) {
         return new JerseyApplicationClient(apacheClient, endpoint.getServiceUrl(), additionalHeaders);
@@ -120,7 +129,7 @@ public class JerseyEurekaHttpClientFactory implements TransportClientFactory {
             apacheClient.destroy();
         }
     }
-    
+
     public static JerseyEurekaHttpClientFactory create(EurekaClientConfig clientConfig,
             Collection<ClientFilter> additionalFilters,
             InstanceInfo myInstanceInfo,

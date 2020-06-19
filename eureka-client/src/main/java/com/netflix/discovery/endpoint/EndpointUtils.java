@@ -15,6 +15,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
+ * TODO: 一个传统的工具类，用于从配置或者DNS中读取最终使用的serviceUrls
  * This class contains some of the utility functions previously found in DiscoveryClient, but should be elsewhere.
  * It *does not yet* clean up the moved code.
  */
@@ -28,6 +29,9 @@ public class EndpointUtils {
         CNAME, A
     }
 
+    /**
+     * 内部静态接口
+     */
     public static interface ServiceUrlRandomizer {
         void randomize(List<String> urlList);
     }
@@ -180,24 +184,28 @@ public class EndpointUtils {
     }
 
     /**
+     * TODO: 默认情况下获取serviceUrl的时候，只找和自己同zone的server们
      * Get the list of all eureka service urls from properties file for the eureka client to talk to.
      *
      * @param clientConfig the clientConfig to use
-     * @param instanceZone The zone in which the client resides
+     * @param instanceZone The zone in which the client resides true表示必须选择与client相同的zone
      * @param preferSameZone true if we have to prefer the same zone as the client, false otherwise
      * @return The list of all eureka service urls for the eureka client to talk to
      */
     public static List<String> getServiceUrlsFromConfig(EurekaClientConfig clientConfig, String instanceZone, boolean preferSameZone) {
         List<String> orderedUrls = new ArrayList<String>();
+        // TODO: 获取所在region区域，若没指定默认值一般是us-east-1, region区域只有一个
         String region = getRegion(clientConfig);
+        // TODO: 每个region内的zone可用区可以有多个，若没配置一般返回defaultZone
         String[] availZones = clientConfig.getAvailabilityZones(clientConfig.getRegion());
         if (availZones == null || availZones.length == 0) {
             availZones = new String[1];
             availZones[0] = DEFAULT_ZONE;
         }
         logger.debug("The availability zone for the given region {} are {}", region, availZones);
+        // TODO: 从可选的zone可选区里面，匹配一个
         int myZoneOffset = getZoneOffset(instanceZone, preferSameZone, availZones);
-
+        // TODO: 拿到此zone下配置的serviceUrls们，一般都会配置多个urls
         List<String> serviceUrls = clientConfig.getEurekaServerServiceUrls(availZones[myZoneOffset]);
         if (serviceUrls != null) {
             orderedUrls.addAll(serviceUrls);

@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * final 变量，由构造器传入
  * Statically configured Eureka server pool.
  *
  * @author Tomasz Bak

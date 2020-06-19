@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * eureka的默认实现
  * @author Tomasz Bak
  */
 public class DefaultEndpoint implements EurekaEndpoint {
@@ -32,6 +33,10 @@ public class DefaultEndpoint implements EurekaEndpoint {
     protected final String relativeUri;
     protected final String serviceUrl;
 
+    /**
+     * serviceUrl 来自于配置，一般如：http://localhost:8080/eureka/
+     * @param serviceUrl
+     */
     public DefaultEndpoint(String serviceUrl) {
         this.serviceUrl = serviceUrl;
 
@@ -100,6 +105,14 @@ public class DefaultEndpoint implements EurekaEndpoint {
         return relativeUri;
     }
 
+    /**
+     * 根据HostName批量创建出List<EurekaEndpoint>
+     * @param hostNames
+     * @param port
+     * @param isSecure
+     * @param relativeUri
+     * @return
+     */
     public static List<EurekaEndpoint> createForServerList(
             List<String> hostNames, int port, boolean isSecure, String relativeUri) {
         if (hostNames.isEmpty()) {

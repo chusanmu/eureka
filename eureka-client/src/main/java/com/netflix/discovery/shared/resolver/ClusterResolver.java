@@ -19,11 +19,20 @@ package com.netflix.discovery.shared.resolver;
 import java.util.List;
 
 /**
+ * 集群解析器，用于解析配置的eureka server地址们
  * @author Tomasz Bak
  */
 public interface ClusterResolver<T extends EurekaEndpoint> {
 
+    /**
+     * eureka集群所在的region区域
+     * @return
+     */
     String getRegion();
 
+    /**
+     * 该区域下所有的端点endpoints
+     * @return
+     */
     List<T> getClusterEndpoints();
 }

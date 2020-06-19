@@ -28,9 +28,21 @@ import java.util.Map;
  * @author Tomasz Bak
  */
 public class EurekaHttpResponse<T> {
+    /**
+     * 响应码
+     */
     private final int statusCode;
+    /**
+     * 响应体
+     */
     private final T entity;
+    /**
+     * 响应头
+     */
     private final Map<String, String> headers;
+    /**
+     * 重定向URL
+     */
     private final URI location;
 
     protected EurekaHttpResponse(int statusCode, T entity) {
